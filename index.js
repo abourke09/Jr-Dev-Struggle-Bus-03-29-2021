@@ -43,17 +43,19 @@ output: false
 
 */
 
-function isItPrime(i){
+function isItPrime(n){
 
-// Iterate from 2 to i-1 
-// Checking for whether any other those numbers are evenly divisible
+// Iterate from 2 to n-1 
+// Checking for whether any of those numbers are evenly divisible into n
 // If any numbers are evenly divisible, then stop and return false 
-// If you reach i-1, then return true
+// If you reach n-1, then return true
 
-  for ( i = 2; i <= i.length - 1; i++) {
-
+  for ( i = 2; i < n; i++) {
+    if (n % i === 0) {
+      return false
+    }
   }
-
+  return true
 }
 
 // isItPrime(17)
@@ -76,28 +78,35 @@ ca -> cat, care, cant
 Fibonacci is a sequence of number where each number is equal to the sum of the previous two numbers. ie 0, 1, 1, 2, 3, 5, 8, 13, 21, 34, 55
 
 Example
-input: 7
-output: 8
+input: 2
+output: 1
+
+input: 4
+output: 2
 
 input: 5
 output: 3
 
-We'll want to start out for loop loop
 
 Build an array of Fibonacci of length x
 It's hard to build Fib without the first two integers, so lets start with those [0, 1] 
-Pop off the last (x^th) item in the answer array
+We'll want to start out with a for loop 
+We can build a fib array by taking fib[i-1] and fib[i-2] to create fib[i]
+Our For loop will start at i = 2
+
+Our answer will be array[x - 1]
 */
 
 function fibonacci(x) {
 
   let fib = [0, 1]
 
-  for (i = 0; i < x; i++){
-
+  for (i = 2; i < x; i++){
+    let newValue = fib[i - 1] + fib[i - 2]
+    fib.push(newValue)
   }
 
-  fib.pop()
+  return fib[x - 1]
 }
 
 // fibonacci(5)
@@ -113,19 +122,32 @@ input: 6
 output: [-3, -2, -1, 1, 2, 3]
 
 input: 7
-output: [-7, -2, -1, 1, 2, 3, 4]
+output: [-3, -2, -1, 0, 1, 2, 3]
 
-If the input integer n is even, then:
-  divide n by two, and build the array counting down from that number to it's negative twin (you'll count down by minusing 1 n times)
-If n is odd, then, 
-  the process is mostly the same but you include zero 
+
+I'll build the array as if it's an odd number, then take the zero out if it's actually even.
+To controll for getting decimal places when dividing by 2, I'll round down 
+Divide the input integer n by 2, then round down to the nearest whole number to get x
+Using a for loop, start at i = -x and stop at i = x 
+  Inside the for loop, build an array (declared outside the loop) with each element = i 
+Outside of the For loop, slice/splice out zero between at index x, IF n is even
 */
 
 function uniqueIntegers(n) {
+  let arr = []
+  let x = Math.floor(n/2)
 
+  for (i = -x; i <= x; i++){
+    arr.push(i)
+  }
 
-
+  (n % 2 === 0) && arr.splice(x, 1)
+  
+  return arr
+  
 }
+
+//uniqueIntegers(13)
 
 /*
 6. Given an array of integers, print out the median and the average
@@ -137,55 +159,56 @@ Average: the sum of all of the integers, divided by the number of integers
 Example
 input: [-2, 17, 23, -99, 11]
 sorted array: [-99, -2, 11, 17, 23]
+output, median: 11
+output, average: -10 
 
-
-First, sort the array
-
+First, sort the array, arr.sort((a, b) => a - b)
+declare a count variable and set is equal to arr.length 
+declare a sum variable and set is equal to arr.reduce((acc, curr) => acc + curr)
+delcare and set median according to whether count is even or odd 
+declare and set average = sum / count
+Return [median, average]
 */
 
 function mathy(arr) {
 
-  arr.sort(function(a, b){
-    return a - b
-  })
+  arr.sort((a, b) => a - b)
 
-  let sum = arr.reduce(function(total, num){
-    total + num
-  })
+  const count = arr.length
+  const sum = arr.reduce((acc, curr) => acc + curr)
 
-  return sum
+  let median = (count % 2 === 0) ? (arr[count/2] + arr[count/2 - 1])/2 : arr[Math.floor(count/2)] 
+
+  let average = sum / count 
+
+  return [median, average]
 }
 
-//mathy([-2, 17, 23, -99, 11])
+// mathy([-2, 17, 23, -99, 11])
 
 /*
 7. Given a string of numbers and dashes, format the string into a phone number
-You'll always have 10 digits. Obviously it can be a random phone number.
+You'll always have 10 digits. Make sure not to lose the order of the numbers.
 
 Example
-input: "-55-588-85-555"
-output: "888-555-5555" 
+input: "55-5111-2222"
+output: "555-111-2222" 
 
 convert the string to an array
-sort the array to separate the numbers from the dashes
-delete all but the first 10 elements of the array
-input the dash - at the (use slice?)
-arr.slice(0, 2).join("") + "-" + arr.slice(3, 5).join("") + "-" + arr.slice(6, 9).join("")
+filter the array to remove the randomly placed dashes
+input the dash - at the indexes 3 and 7 (use slice(index, number to be removed, thing to add))
 re-join the answer array into a string again
 */
 
 function phoneNumber(s){
-  s.split("").sort(function(a, b){
-    return a - b
-  })
+  let arr = s.split("")
   
-  let first = s.slice(0, 2)
-  let second = s.slice(3, 5)
-  let third = s.slice(6, 9)
+  const nums = arr.filter((x) => x != "-")
+
+  nums.splice(3, 0, "-")
+  nums.splice(7, 0, "-")
   
-  first.join("") + "-" + second.join("") + "-" + third.join("")
-
-
+  return nums.join("")
 }
 
-//phoneNumber("-55-588-85-555")
+phoneNumber("55-5111-2222")
